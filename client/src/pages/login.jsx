@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import axios from "axios"
 import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi"
+import { Loader2 } from "lucide-react"
 
 const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -14,14 +14,12 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const inputData = loginInput;
-    const action = loginUser;
+    await loginUser(loginInput)
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const inputData = loginInput;
-    const action = loginUser;
+    await registerUser(signupInput);
   };
 
   return (
@@ -62,7 +60,14 @@ const Login = () => {
                   onChange={(e)=>setLoginInput({...loginInput,password:e.target.value})}
                 />
               </div>
-              <Button type="submit" className="w-full">Log In</Button>
+              <Button disabled={loginLoading} type="submit" className="w-full">
+                {loginLoading?(
+                  <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>Please Wait
+                  </>
+                ):"Log In"
+                }
+              </Button>
             </form>
           </div>
         </TabsContent>
@@ -107,7 +112,14 @@ const Login = () => {
                   onChange={(e) => setSignupInput({ ...signupInput, password: e.target.value })}
                 />
               </div>
-              <Button type="submit" className="w-full">Sign Up</Button>
+              <Button disabled={registerLoading} type="submit" className="w-full">
+                {registerLoading?(
+                  <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>Please Wait
+                  </>
+                ):"Sign Up"
+                }
+              </Button>
             </form>
           </div>
         </TabsContent>
