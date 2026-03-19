@@ -6,12 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
   const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "" });
   const [loginUser,{data:loginData,error:loginError,isLoading:loginLoading,isSuccess:loginSuccess}] = useLoginUserMutation();
   const [registerUser ,{data:registerData,error:registerError,isLoading:registerLoading,isSuccess:registerSuccess}] = useRegisterUserMutation();
+  const nevigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ const Login = () => {
     }
     if(loginSuccess && loginData){
       toast.success(loginData.message||"Logined successful.")
+      nevigate('/')
     }
     if(loginError){
       toast.error(loginData.data.message || "Login failed");

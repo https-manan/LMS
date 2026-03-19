@@ -12,7 +12,7 @@ const Section = () => {
                 Discover, Keep Learning and exploring.
             </p>
 
-            <form  action="" className="flex items-center justify-center max-w-2xl mx-auto">
+            <form className="flex items-center justify-center max-w-2xl mx-auto">
                 <Input
                     type="text"
                     placeholder="Search for anything..."

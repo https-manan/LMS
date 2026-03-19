@@ -29,6 +29,8 @@ import {
 import { Button } from './button'
 import DarkMode from './DarkMode'
 import { Separator } from "@/components/ui/separator"
+import MyLearning from '@/pages/student/MyCourses'
+import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   const user = true;
@@ -51,14 +53,14 @@ const Navbar = () => {
                 </Avatar>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent>
+              <DropdownMenuContent className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuItem>My Learning</DropdownMenuItem>
-                  <DropdownMenuItem>Edit Profile</DropdownMenuItem>
+                  <DropdownMenuItem><Link to="my-courses">My Courses</Link></DropdownMenuItem>
+                  <DropdownMenuItem><Link to="profile">My Profile</Link></DropdownMenuItem>
                   <DropdownMenuItem>Log out</DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator /> 
                 <DropdownMenuItem>Dashboard</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
