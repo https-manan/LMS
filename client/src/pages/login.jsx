@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 const Login = () => {
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
@@ -21,7 +22,20 @@ const Login = () => {
     e.preventDefault();
     await registerUser(signupInput);
   };
-
+  useEffect(()=>{
+    if(registerSuccess && registerData){
+      toast.success(registerData.data.message||"SignUp successful.")
+    }
+    if(registerError){
+      toast.error(registerData.data.message || "SignUp failed");
+    }
+    if(loginSuccess && loginData){
+      toast.success(loginData.message||"Logined successful.")
+    }
+    if(loginError){
+      toast.error(loginData.data.message || "Login failed");
+    }
+  },[loginLoading,registerLoading,loginData,registerData,loginError,registerError ]) 
   return (
     <div className="flex items-center justify-center w-full min-h-screen bg-muted">
       <Tabs defaultValue="login" className="w-full max-w-md">
