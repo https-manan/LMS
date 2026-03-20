@@ -1,5 +1,5 @@
 import { Menu, School } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,11 +29,24 @@ import {
 import { Button } from './button'
 import DarkMode from './DarkMode'
 import { Separator } from "@/components/ui/separator"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLogoutUserQuery } from '@/features/api/authApi'
+import { toast } from 'sonner'
+import { useSelector } from 'react-redux'
 
 const Navbar = () => {
-  const user = true;
-
+  const { user } = useSelector((store) => { store.auth });
+  const nevigate = useNavigate();
+  const { logoutUser, isSuccess } = useLogoutUserQuery();
+  const logoutHandler = async () => {
+    await logoutUser();
+    nevigate('/login')
+  }
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Logout successfully")
+    }
+  }, [isSuccess])
   return (
     <div className='h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-700 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10'>
       <div className='max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full'>
@@ -46,7 +59,7 @@ const Navbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                  <AvatarImage src={user?.photoUrl || "https://github.com/shadcn.png"} alt="@shadcn" />
                   <AvatarFallback>CN</AvatarFallback>
                   <AvatarBadge className="bg-green-600 dark:bg-green-800" />
                 </Avatar>
@@ -57,15 +70,20 @@ const Navbar = () => {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuItem><Link to="my-courses">My Courses</Link></DropdownMenuItem>
                   <DropdownMenuItem><Link to="profile">My Profile</Link></DropdownMenuItem>
-                  <DropdownMenuItem>Log out</DropdownMenuItem>
+                  <DropdownMenuItem onClick={logoutHandler}>Log out</DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator /> 
-                <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                {
+                  user.role === "instructor" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                    </>
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
-              <Button variant='outline'>Login</Button>
+              <Button onClick={() => { nevigate('/login') }} variant='outline'>Login</Button>
               <Button>SignUp</Button>
             </>
           )}
@@ -91,12 +109,12 @@ const MobileNavbar = () => {
       <SheetTrigger asChild>
         <Button size="icon" className="rounded-full bg-gray-200 hover:bg-gray-400" variant="outline"><Menu /></Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col"> 
+      <SheetContent className="flex flex-col">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
           <SheetTitle>E-Learning</SheetTitle>
-          <DarkMode/>
+          <DarkMode />
         </SheetHeader>
-        <Separator className="mr-2"/>
+        <Separator className="mr-2" />
         <nav className='flex flex-col space-y-4'>
           <span>My Learning</span>
           <span>Edit Profile</span>

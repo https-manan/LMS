@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,15 +16,49 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from 'lucide-react'
 import Course from './Course'
-import { useLoadUserQuery } from '@/features/api/authApi'
+import { useLoadUserQuery, useUpdateUserMutation } from '@/features/api/authApi'
+import { toast } from 'sonner'
 
 
 const Profile = () => {
-    const {data,isLoading} = useLoadUserQuery();
-    if(isLoading){
-        return <h1>Profile Loading...</h1>
+    const [name, setName] = useState("");
+    const [profilePic, setProfilePic] = useState(""); //refetch is ki koi bhhi change hoga it gonna refetch the data
+    const { data, isLoading,refetch } = useLoadUserQuery();
+    const [updateUser, { data: updateUserData, isLoading: updateLoading, isError, isSuccess }] = useUpdateUserMutation();
+    
+    useEffect(()=>{
+        refetch();
+    },[])
+ 
+
+    // ✅ All hooks at the top, before any early return
+    useEffect(() => {
+        if (isSuccess) {
+            refetch();
+            toast.success(updateUserData?.message || "Profile Updated");
+        }
+        if (isError) {
+            toast.error("Failed to update profile");
+        }
+    }, [isError, updateUserData, isSuccess]);
+
+    // ✅ Early return AFTER all hooks
+    if (isLoading) return <h1>Profile Loading...</h1>;
+
+    const user = data && data.user ;
+
+    const updateHandler = async () => {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("profilePhoto", profilePic);
+        await updateUser(formData);
     }
-    const {user} = data;
+
+    const fileChangeHandler = (e) => {
+        const file = e.target.files?.[0];
+        if (file) setProfilePic(file);
+    }
+
     return (
         <div className="max-w-4xl mx-auto my-24 px-6">
             <h1 className="font-bold text-3xl tracking-wide mb-10">PROFILE</h1>
@@ -32,7 +66,7 @@ const Profile = () => {
                 <div>
                     <Avatar className="w-28 h-28">
                         <AvatarImage
-                            src={user.photoUrl||"https://github.com/shadcn.png"}
+                            src={user.photoUrl || "https://github.com/shadcn.png"}
                             alt="profile"
                         />
                         <AvatarFallback>PM</AvatarFallback>
@@ -51,49 +85,70 @@ const Profile = () => {
                         <span className="font-semibold">Role:</span>{" "}
                         <span className="text-gray-600">{user.role.toUpperCase()}</span>
                     </p>
+
+                    {/* ✅ Dialog with form correctly placed inside DialogContent */}
                     <Dialog>
-                        <form>
-                            <DialogTrigger asChild>
-                                <Button className="bg-slate-800 hover:bg-black text-white cursor-pointer">Edit Profile</Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-sm">
-                                <DialogHeader>
-                                    <DialogTitle>Edit profile</DialogTitle>
-                                    <DialogDescription>
-                                        Make changes to your profile here. Click save when you'r done.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <FieldGroup>
-                                    <Field>
-                                        <Label htmlFor="name-1">Name</Label>
-                                        <Input id="name-1" name="name" defaultValue="Manan bhardwaj" />
-                                    </Field>
-                                    <Field>
-                                        <Label htmlFor="username-1">Profile Image</Label>
-                                        <Input type="file" accept="image/*" />
-                                    </Field>
-                                </FieldGroup>
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button variant="outline">Cancel</Button>
-                                    </DialogClose>
-                                    <Button disabled={isLoading} type="submit">
-                                        {
-                                            isLoading?<><Loader2 className='animate-spin'/>Please wait</>:"Save changes"
-                                        }
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </form>
-                    </Dialog> 
+                        <DialogTrigger asChild>
+                            <Button className="bg-slate-800 hover:bg-black text-white cursor-pointer">
+                                Edit Profile
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-sm">
+                            <DialogHeader>
+                                <DialogTitle>Edit profile</DialogTitle>
+                                <DialogDescription>
+                                    Make changes to your profile here. Click save when you're done.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <FieldGroup>
+                                <Field>
+                                    <Label htmlFor="name-1">Name</Label>
+                                    <Input
+                                        id="name-1"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        name="name"
+                                        placeholder={user.name}
+                                    />
+                                </Field>
+                                <Field>
+                                    <Label htmlFor="profile-image">Profile Image</Label>
+                                    {/* ✅ fileChangeHandler correctly receives `e` */}
+                                    <Input
+                                        id="profile-image"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={fileChangeHandler}
+                                    />
+                                </Field>
+                            </FieldGroup>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                {/* ✅ updateLoading used instead of isLoading */}
+                                <Button
+                                    disabled={updateLoading}
+                                    onClick={updateHandler}
+                                >
+                                    {
+                                        updateLoading
+                                            ? <><Loader2 className='animate-spin' />Please wait</>
+                                            : "Save changes"
+                                    }
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
             <div>
                 <h1 className='font-medium text-lg text-center'>Your courses</h1>
                 <div className='grid grid-cols-3 gap-5 my-6'>
                     {
-                        user.enrolledCourses.length===0?<h1>You haven't enrolled in any course.</h1>:
-                        user.enrolledCourses.map((c)=>{return <Course course={c} key={c._id}/>})
+                        user.enrolledCourses.length === 0
+                            ? <h1>You haven't enrolled in any course.</h1>
+                            : user.enrolledCourses.map((c) => <Course course={c} key={c._id} />)
                     }
                 </div>
             </div>
