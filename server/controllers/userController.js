@@ -1,6 +1,7 @@
 import { User } from "../models/usermodel.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { deleteMediaFromCloudinary, uploadMedia } from "../utils/Cloudinary.js";
 
 export const register=async(req,res)=>{
     try {
@@ -102,38 +103,38 @@ export const getUserProfile = async(req,res)=>{
         })
     }
 }
-
-export const updateProfile = async (req,res)=>{
+export const updateProfile = async (req, res) => {
     try {
         const userId = req.id;
-        const {name} = req.body;
+        const { name } = req.body;
         const photo = req.file;
+        const user = await User.findById(userId);
 
-        const updatedData = {}
-         
-        if(name){
-            updatedData.name = name;
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
         }
-        if(photo){
-            updatedData.photoUrl = photo.path;
+
+        if (user.photoUrl) {
+            const publicId = user.photoUrl.split('/').pop().split(".")[0];
+            deleteMediaFromCloudinary(publicId);
         }
-        const user = await User.findByIdAndUpdate(
-            userId,
-            updatedData,
-            {new:true,runValidators:true}
-        );
-        if(!user){
-            return res.status(400).json({
-                message:"User not found"
-            })
-        }
+        const cloudResponse = await uploadMedia(photo.path);
+        const { secure_url: photoUrl } = cloudResponse;
+
+        const updatedData = { name, photoUrl }; 
+
+        const updatedUser = await User.findByIdAndUpdate(userId, updatedData, { new: true }).select("-password");
+
         return res.status(200).json({
-            msg:"User updated successfully"
-        })
+            success: true,
+            user: updatedUser,
+            message: 'Profile updated successfully'
+        });
+
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(500).json({
-            mssage:"Failed to update profile"
-        })
+            message: "Failed to update profile"
+        });
     }
 }
