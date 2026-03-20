@@ -17,7 +17,7 @@ export const register=async(req,res)=>{
             })
         }
         const hashedPass = await bcrypt.hash(password,10);
-        const user = await User.create({
+        await User.create({
             name,
             email,
             password:hashedPass
@@ -48,7 +48,7 @@ export const login = async(req,res)=>{
                 msg:"Incorrect email or password",
             })
         }
-        const isPassword = await bcrypt.compare(password,userExists.password);
+        const isPassword = bcrypt.compare(password,userExists.password);
         if(!isPassword){
             return res.status(400).json({
                 msg:"Incorrect password"
@@ -99,6 +99,41 @@ export const getUserProfile = async(req,res)=>{
         console.log(error)
          return res.status(500).json({
             message:'Failed to load user'
+        })
+    }
+}
+
+export const updateProfile = async (req,res)=>{
+    try {
+        const userId = req.id;
+        const {name} = req.body;
+        const photo = req.file;
+
+        const updatedData = {}
+         
+        if(name){
+            updatedData.name = name;
+        }
+        if(photo){
+            updatedData.photoUrl = photo.path;
+        }
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updatedData,
+            {new:true,runValidators:true}
+        );
+        if(!user){
+            return res.status(400).json({
+                message:"User not found"
+            })
+        }
+        return res.status(200).json({
+            msg:"User updated successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            mssage:"Failed to update profile"
         })
     }
 }
