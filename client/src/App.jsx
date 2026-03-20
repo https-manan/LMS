@@ -21,15 +21,18 @@ const appRouter = createBrowserRouter([
             <Section/>
             <Courses/>
             </>)
-            },{
+            },
+            {
                 path:"/login",
                 element:<>
                 <Login/>
                 </>
-            },{
+            },
+            {
               path:'my-courses',
               element:<MyCourses/>
-            },{
+            },
+            {
               path:"profile",
               element:<Profile/>
             }

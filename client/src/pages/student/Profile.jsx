@@ -16,11 +16,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from 'lucide-react'
 import Course from './Course'
+import { useLoadUserQuery } from '@/features/api/authApi'
 
 
 const Profile = () => {
-    const isLoading=false;
-    const enrolledCourses=[1,2,3,4,5];
+    const {data,isLoading} = useLoadUserQuery();
+    if(isLoading){
+        return <h1>Profile Loading...</h1>
+    }
+    const {user} = data;
     return (
         <div className="max-w-4xl mx-auto my-24 px-6">
             <h1 className="font-bold text-3xl tracking-wide mb-10">PROFILE</h1>
@@ -28,7 +32,7 @@ const Profile = () => {
                 <div>
                     <Avatar className="w-28 h-28">
                         <AvatarImage
-                            src="https://github.com/shadcn.png"
+                            src={user.photoUrl||"https://github.com/shadcn.png"}
                             alt="profile"
                         />
                         <AvatarFallback>PM</AvatarFallback>
@@ -37,15 +41,15 @@ const Profile = () => {
                 <div className="space-y-3">
                     <p className="text-lg">
                         <span className="font-semibold">Name:</span>{" "}
-                        <span className="text-gray-600">Manan Bhardwaj</span>
+                        <span className="text-gray-600">{user.name}</span>
                     </p>
                     <p className="text-lg">
                         <span className="font-semibold">Email:</span>{" "}
-                        <span className="text-gray-600">manan@gmail.com</span>
+                        <span className="text-gray-600">{user.email}</span>
                     </p>
                     <p className="text-lg">
                         <span className="font-semibold">Role:</span>{" "}
-                        <span className="text-gray-600">INSTRUCTOR</span>
+                        <span className="text-gray-600">{user.role.toUpperCase()}</span>
                     </p>
                     <Dialog>
                         <form>
@@ -88,8 +92,8 @@ const Profile = () => {
                 <h1 className='font-medium text-lg text-center'>Your courses</h1>
                 <div className='grid grid-cols-3 gap-5 my-6'>
                     {
-                        enrolledCourses.length===0?<h1>You haven't enrolled in any course.</h1>:
-                        enrolledCourses.map((c,index)=>{return <Course key={index}/>})
+                        user.enrolledCourses.length===0?<h1>You haven't enrolled in any course.</h1>:
+                        user.enrolledCourses.map((c)=>{return <Course course={c} key={c._id}/>})
                     }
                 </div>
             </div>

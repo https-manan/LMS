@@ -29,7 +29,6 @@ import {
 import { Button } from './button'
 import DarkMode from './DarkMode'
 import { Separator } from "@/components/ui/separator"
-import MyLearning from '@/pages/student/MyCourses'
 import { Link } from 'react-router-dom'
 
 const Navbar = () => {
