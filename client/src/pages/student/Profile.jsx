@@ -22,7 +22,7 @@ import { toast } from 'sonner'
 
 const Profile = () => {
     const [name, setName] = useState("");
-    const [profilePic, setProfilePic] = useState(""); //refetch is ki koi bhhi change hoga it gonna refetch the data
+    const [profilePic, setProfilePic] = useState("");
     const { data, isLoading,refetch } = useLoadUserQuery();
     const [updateUser, { data: updateUserData, isLoading: updateLoading, isError, isSuccess }] = useUpdateUserMutation();
     
@@ -30,8 +30,6 @@ const Profile = () => {
         refetch();
     },[])
  
-
-    // ✅ All hooks at the top, before any early return
     useEffect(() => {
         if (isSuccess) {
             refetch();
@@ -42,7 +40,6 @@ const Profile = () => {
         }
     }, [isError, updateUserData, isSuccess]);
 
-    // ✅ Early return AFTER all hooks
     if (isLoading) return <h1>Profile Loading...</h1>;
 
     const user = data && data.user ;
@@ -86,7 +83,6 @@ const Profile = () => {
                         <span className="text-gray-600">{user.role.toUpperCase()}</span>
                     </p>
 
-                    {/* ✅ Dialog with form correctly placed inside DialogContent */}
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button className="bg-slate-800 hover:bg-black text-white cursor-pointer">
@@ -113,7 +109,6 @@ const Profile = () => {
                                 </Field>
                                 <Field>
                                     <Label htmlFor="profile-image">Profile Image</Label>
-                                    {/* ✅ fileChangeHandler correctly receives `e` */}
                                     <Input
                                         id="profile-image"
                                         type="file"
@@ -126,7 +121,6 @@ const Profile = () => {
                                 <DialogClose asChild>
                                     <Button variant="outline">Cancel</Button>
                                 </DialogClose>
-                                {/* ✅ updateLoading used instead of isLoading */}
                                 <Button
                                     disabled={updateLoading}
                                     onClick={updateHandler}

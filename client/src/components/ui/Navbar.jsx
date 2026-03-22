@@ -30,14 +30,15 @@ import { Button } from './button'
 import DarkMode from './DarkMode'
 import { Separator } from "@/components/ui/separator"
 import { Link, useNavigate } from 'react-router-dom'
-import { useLogoutUserQuery } from '@/features/api/authApi'
+import { useLogoutUserMutation } from '@/features/api/authApi'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
 
 const Navbar = () => {
-  const { user } = useSelector((store) => { store.auth });
+  const user = useSelector((state) => state.auth.user);
+  const isAuth = useSelector((state) => state.auth.isAuthenticated);
   const nevigate = useNavigate();
-  const { logoutUser, isSuccess } = useLogoutUserQuery();
+  const [logoutUser, { isSuccess }] = useLogoutUserMutation();
   const logoutHandler = async () => {
     await logoutUser();
     nevigate('/login')

@@ -18,9 +18,7 @@ const Section = () => {
                     placeholder="Search for anything..."
                     className="w-full md:w-96 h-12 px-6 rounded-l-full bg-amber-50 text-black shadow-lg border-none focus-visible:ring-0"
                 />
-                <Button
-                    className="h-12 bg-amber-50 text-zinc-900 px-8 rounded-r-full border-l border-zinc-200 hover:bg-zinc-200 transition-colors shadow-lg"
-                >
+                <Button className="h-12 bg-amber-50 text-zinc-900 px-8 rounded-r-full border-l border-zinc-200 hover:bg-zinc-200 transition-colors shadow-lg">
                     Search
                 </Button>
             </form>

@@ -7,47 +7,69 @@ import { RouterProvider } from 'react-router'
 import Courses from './pages/student/Courses'
 import MyCourses from './pages/student/MyCourses'
 import Profile from './pages/student/Profile'
+import SideBar from './pages/admin/lecture/SideBar'
+import Dashboard from './pages/admin/lecture/Dashboard'
+import CourseTable from './pages/admin/course/CourseTable'
+import AddCourse from './pages/admin/course/AddCourse'
 
 
 const appRouter = createBrowserRouter([
-    {
-        path:'/',
-        element:<Mainlayout/>,
-        children:[
-            {
-            path:'/',
-            element:(
-            <>
-            <Section/>
-            <Courses/>
-            </>)
-            },
-            {
-                path:"/login",
-                element:<>
-                <Login/>
-                </>
-            },
-            {
-              path:'my-courses',
-              element:<MyCourses/>
-            },
-            {
-              path:"profile",
-              element:<Profile/>
-            }
+  {
+    path: '/',
+    element: <Mainlayout />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <>
+            <Section />
+            <Courses />
+          </>)
+      },
+      {
+        path: "login",
+        element: <>
+          <Login />
+        </>
+      },
+      {
+        path: 'my-courses',
+        element: <MyCourses />
+      },
+      {
+        path: "profile",
+        element: <Profile />
+      },
+      {
+        path: '/admin',
+        element: <SideBar />,
+        children: [
+          {
+            path: 'dashboard',
+            element: <Dashboard />
+          },
+          {
+            path: 'course',
+            element: <CourseTable />,
+          },
+          {
+            path: 'course/create', 
+            element: <AddCourse />
+          }
         ]
-    }
+      }
+    ]
+  }
 ])
+
 
 
 function App() {
   return (
     <>
-    <RouterProvider router={appRouter}/>
+      <RouterProvider router={appRouter} />
     </>
   )
 }
 
 export default App
- 
