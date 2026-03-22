@@ -1,7 +1,7 @@
 import { User } from "../models/usermodel.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { deleteMediaFromCloudinary, uploadMedia } from "../utils/Cloudinary.js";
+import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
 
 export const register=async(req,res)=>{
     try {
@@ -75,7 +75,7 @@ export const login = async(req,res)=>{
 
 export const logout=async(req,res)=>{
     try {
-        return res.status(200).cookie("token",'',{maxAge:0}).json({
+        return res.status(200).cookie("token",{maxAge:0}).json({
             message:"Logged out successfully."
         })
     } catch (error) {

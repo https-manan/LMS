@@ -6,6 +6,9 @@ import cors from 'cors'
 import connect from './DB/connection.js';
 import userRoute from './routes/userRoute.js';
 import cookieParser from "cookie-parser";
+import courseRoute from './routes/courseRoute.js'
+
+
 
 app.use(cookieParser())
 app.use(cors({
@@ -18,6 +21,7 @@ connect();
 
 //API'S
 app.use('/api/v1/users',userRoute);
+app.use('/api/v1/courses',courseRoute);
 
 
 app.listen(PORT,()=>{
