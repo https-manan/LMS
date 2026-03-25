@@ -5,6 +5,7 @@ const USER_API = 'http://localhost:8080/api/v1/';
 
 export const authApi = createApi({
     reducerPath: "authApi",
+    tagTypes:['Refetch_Creator_Course'],
     baseQuery: fetchBaseQuery({
         baseUrl: USER_API,
         credentials: "include"
@@ -74,10 +75,16 @@ export const authApi = createApi({
                 method:"POST",
                 body:formData,
                 credentials:"include"
-            })
-        })
+            }),
+            invalidatesTags:['Refetch_Creator_Course']
+        }),
+        getCourse:builder.query({
+            url:"/courses/getCourse",
+            method:"GET"
+        }),
+        invalidatesTags:['Refetch_Creator_Course']
     })
 });
 
 
-export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useLoadUserQuery, useUpdateUserMutation } = authApi;
+export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useLoadUserQuery, useUpdateUserMutation,useCreateCourseMutation,useGetCourseQuery} = authApi;
