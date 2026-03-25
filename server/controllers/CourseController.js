@@ -19,7 +19,7 @@ export const createCourse = async(req,res)=>{
         const cloudResponse = await uploadMedia(courseThumbnail.path);
         const {secure_url:photoUrl,public_id} = cloudResponse;
         const updateData={
-            courseTitle,category,coursePrice,courseThumbnail:photoUrl
+            courseTitle,category,coursePrice,courseThumbnail:{url:photoUrl, public_id}
         }
         const course = await Course.create({
                 ...updateData,creator:req.id
@@ -33,5 +33,26 @@ export const createCourse = async(req,res)=>{
     return res.status(500).json({
         msg:"Internal server error in creating course"
     })
+    }
+}
+
+export const getCreatorCourse = async(req,res)=>{
+    try {
+        const userId =  req.id;
+        const course = await Course.find({creator:userId});
+        if(!course){
+            return res.status(404).json({
+                msg:"Course not found"
+            })
+        }
+        return res.status(200).json({
+            course
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg:"Issue in fetching course"
+        })
     }
 }

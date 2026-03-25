@@ -24,8 +24,14 @@ const courseSchema = new mongoose.Schema({
         require:true
     },
     courseThumbnail:{
-        type:String,
-        require:true
+        url: {
+            type: String,
+            required: true
+        },
+        public_id: {
+            type: String,
+            required: true
+        }
     },
     enrolledStudents:[
         {
