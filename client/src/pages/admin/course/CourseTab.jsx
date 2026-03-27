@@ -2,11 +2,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useState } from 'react'
+import { useEditCourseMutation, useGetCourseByIdQuery } from '@/features/api/authApi'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 const CourseTab = () => {
   const isPublished = false;
-
+  const nevigate = useNavigate();
   const [input, setInput] = useState({
     title: "",
     subTitle: "",
@@ -15,9 +18,12 @@ const CourseTab = () => {
     level: "",
     price: "",
   })
+  const params = useParams();
+  const courseId=params.courseId;
   const [file, setFile] = useState(null);
-
-  const onSubmit=()=>{
+  const [editCourse,{data,error,isSuccess}] = useEditCourseMutation();
+  const {data:courseData,isLoading} = useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
+  const onSubmit=async()=>{
     const formData = new FormData();
     formData.append("title", input.title);
     formData.append("subTitle", input.subTitle);
@@ -26,9 +32,29 @@ const CourseTab = () => {
     formData.append("level", input.level);
     formData.append("price", input.price);
     formData.append("thumbnail", file);
-    //Submit that data to BE point 
+    await editCourse({formData,courseId});
   }
-
+  useEffect(()=>{
+    if(isSuccess){
+      toast.success("Course updated successfully");
+      nevigate("/")
+    }
+    if(error){
+      toast.error("couldn't update course")
+    }
+  },[isSuccess,error])
+  useEffect(()=>{
+    const course = courseData?.course;
+    if(!course)return;
+    setInput({
+      title:course.title,
+      subTitle:course.subTitle,
+      description:course.description,
+      category:course.category,
+      level:course.level,
+      price:course.price
+    })
+  },[courseData])
   return (
     <div className="p-6">
       <Card>

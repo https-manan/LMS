@@ -3,18 +3,18 @@ import React from 'react'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Link} from 'react-router-dom'
+import { Link, useNavigate} from 'react-router-dom'
 import { useGetCourseQuery } from '@/features/api/authApi'
 
 
 const CourseTable = () => {
+  const nevigate = useNavigate();
     const {data,isLoading} = useGetCourseQuery();
     if(isLoading){
         return <h1>Loading....</h1>
@@ -48,7 +48,7 @@ const CourseTable = () => {
           </TableHeader>
 
           <TableBody>
-            {(data?.courses||[]).map((course) => (
+            {(data?.course||[]).map((course) => (
               <TableRow
                 key={course._id}
                 className="border-b last:border-none hover:bg-gray-50"

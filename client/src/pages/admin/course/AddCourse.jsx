@@ -28,7 +28,7 @@ export default function AddCourse() {
             }
         },[isSuccess,error,isLoading,data])
         const courseHandler = ()=>{
-            const formData = new formData();
+            const formData = new FormData();
             formData.append("courseTitle", form.courseTitle);
             formData.append("category", form.category);
             formData.append("coursePrice", form.coursePrice);

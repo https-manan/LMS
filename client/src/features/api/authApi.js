@@ -54,8 +54,8 @@ export const authApi = createApi({
             }),
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 try {
-                    const result = await queryFulfilled;
-                    dispatch(userLoggedIn({ user: result.data.user }));
+                    await queryFulfilled;
+                    dispatch(userLoggedOut());
                 } catch (error) {
                     console.log(error);
                 }
@@ -78,13 +78,51 @@ export const authApi = createApi({
             }),
             invalidatesTags:['Refetch_Creator_Course']
         }),
-        getCourse:builder.query({
-            url:"/courses/getCourse",
-            method:"GET"
+        getCourse: builder.query({
+            query: () => ({
+                url: "/courses/getCourse",
+                method: "GET",
+            }),
+            providesTags: ['Refetch_Creator_Course'] // invalidatesTags is for mutations, not queries
         }),
-        invalidatesTags:['Refetch_Creator_Course']
+        editCourse:builder.mutation({
+            query:({formData,courseId})=>({
+                url:`/courses/editCourse/${courseId}`,
+                method:"PUT",
+                body:formData
+            }),
+            invalidatesTags:['Refetch_Creator_Course']
+        }),
+        getCourseById:builder.query({
+            query:(courseId)=>({
+                url:`/courses/getCourse/${courseId}`,
+                method:"GET"
+            })
+        }),
+        createLecture:builder.mutation({
+            query:(formData,courseId)=>({
+                url:`/courses/${courseId}/lecture`,
+                method:"POST",
+                body:formData,
+                credentials:"include"
+            })
+        }),
+        getLecture:builder.query({
+            query:(courseId)=>({
+                url:`/course/${courseId}/lecture`,
+                method:"GET"
+            })
+        }),
+        editLecture:builder.mutation({
+            query:(courseId,formData)=>({
+                url:`/courses/${courseId}/${lectureId}/update-lecture`,
+                method:"PUT",
+                body:formData,
+                credentials:"include"
+            })
+        })
     })
 });
 
 
-export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useLoadUserQuery, useUpdateUserMutation,useCreateCourseMutation,useGetCourseQuery} = authApi;
+export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useLoadUserQuery, useUpdateUserMutation,useCreateCourseMutation,useGetCourseQuery,useEditCourseMutation,useGetCourseByIdQuery,useCreateLectureMutation,useGetLectureQuery,useEditLectureMutation} = authApi;
