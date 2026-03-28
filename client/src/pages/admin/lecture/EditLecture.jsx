@@ -11,7 +11,7 @@ export default function EditLecture() {
     <div className="min-h-screen bg-muted/40">
       <div className="bg-background border-b sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link to={`/admin/course/${courseId}/lecture`}>
+          <Link to={`/admin/courses/${courseId}/lecture`}>
             <Button variant="outline" size="icon" className="rounded-xl h-9 w-9">
               <ArrowLeft className="h-4 w-4" />
             </Button>

@@ -6,7 +6,7 @@ import { useCreateCourseMutation } from "@/features/api/authApi";
 import { useEffect,useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function AddCourse() {
         const [createCourse,{isSuccess,error,isLoading,data}] = useCreateCourseMutation();
@@ -21,7 +21,7 @@ export default function AddCourse() {
         useEffect(()=>{
             if(isSuccess){
                 toast.success("Course Created successfully");
-                nevigate('/admin/course')
+                nevigate('/admin/courses')
             }
             if(error){
                 toast.error("Failed to create course")
@@ -33,7 +33,7 @@ export default function AddCourse() {
             formData.append("category", form.category);
             formData.append("coursePrice", form.coursePrice);
             formData.append("courseDescription", form.courseDescription);
-            formData.append("courseThumbnail", file);
+            formData.append("CourseThumbnail", file);
 
             createCourse(formData);
         }
@@ -102,7 +102,9 @@ export default function AddCourse() {
             />
           </div>
           <div className="flex justify-end gap-3">
+            <Link to={"/admin/courses"}>
             <Button variant="outline">Cancel</Button>
+            </Link>
             <Button onClick={courseHandler} disabled={isLoading}>
                {
                 isLoading?<span className="flex items-center gap-2"><Loader2 className="animate-spin" />Please Wait</span>: "Create Course" 

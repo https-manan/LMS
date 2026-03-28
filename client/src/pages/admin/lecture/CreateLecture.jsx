@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import Lecture from "./Lecture";
 
-const AddLecture = () => {
+const CreateLecture = () => {
   const { courseId } = useParams();
   const {data,isLoading:lectureLoading,isError:lectureError,refetch} = useGetLectureQuery(courseId);
   const [createLecture, { isLoading, isSuccess, error }]=useCreateLectureMutation();
@@ -109,7 +109,7 @@ const AddLecture = () => {
                 lectureLoading?(
                     <p>Loading...</p>
                 ):(
-                    lectureError?<p>Failed to get lectures</p>:(data.lectures.map((lecture,index)=>{
+                    lectureError?<p>Failed to get lectures</p>:((data?.lectures||[]).map((lecture,index)=>{
                         return <Lecture key={lecture._id} lecture={lecture} courseId={courseId} index={index}/>
                     }))
                 )
@@ -120,4 +120,4 @@ const AddLecture = () => {
   );
 };
 
-export default AddLecture;
+export default CreateLecture;

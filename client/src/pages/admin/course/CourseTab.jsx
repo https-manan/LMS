@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useEditCourseMutation, useGetCourseByIdQuery } from '@/features/api/authApi'
+import { useDeleteCourseMutation, useEditCourseMutation, useGetCourseByIdQuery } from '@/features/api/authApi'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -21,8 +21,9 @@ const CourseTab = () => {
   const params = useParams();
   const courseId=params.courseId;
   const [file, setFile] = useState(null);
-  const [editCourse,{data,error,isSuccess}] = useEditCourseMutation();
-  const {data:courseData,isLoading} = useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
+  const [editCourse,{ error,isSuccess,isLoading}] = useEditCourseMutation();
+  const [deleteCourse,{isError,isLoading:DelLoading,isSuccess:delSuccess}]=useDeleteCourseMutation();
+  const {data:courseData} = useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
   const onSubmit=async()=>{
     const formData = new FormData();
     formData.append("title", input.title);
@@ -31,7 +32,7 @@ const CourseTab = () => {
     formData.append("category", input.category);
     formData.append("level", input.level);
     formData.append("price", input.price);
-    formData.append("thumbnail", file);
+    formData.append("CourseThumbnail", file);
     await editCourse({formData,courseId});
   }
   useEffect(()=>{
@@ -55,6 +56,18 @@ const CourseTab = () => {
       price:course.price
     })
   },[courseData])
+  const delCourse=async ()=>{
+    await deleteCourse(courseId);
+  }
+  useEffect(()=>{
+    if(delSuccess){
+      toast.success("Course deleted successfully");
+      nevigate('/admin/courses');
+    }
+    if(isError){
+      toast.error("Error in deleting course");
+    }
+  })
   return (
     <div className="p-6">
       <Card>
@@ -73,8 +86,10 @@ const CourseTab = () => {
               <Button variant="outline" className="cursor-pointer">
                 {isPublished ? "Unpublish" : "Publish"}
               </Button>
-              <Button variant="destructive" className="cursor-pointer">
-                Remove Course
+              <Button disabled={DelLoading} onClick={delCourse} variant="destructive" className="cursor-pointer">
+                {
+                  DelLoading?"Deleting..":"Delete Course"
+                }
               </Button>
             </div>
           </div>
@@ -155,7 +170,7 @@ const CourseTab = () => {
             </div>
           </div>
           <div className="space-y-3">
-            <Label>Course Thumbnail</Label>
+            <Label>Course Thumbnail</Label> 
 
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background text-sm text-muted-foreground cursor-pointer hover:bg-muted transition-colors">
@@ -195,7 +210,11 @@ const CourseTab = () => {
             </div>
           </div>
            <div className="flex justify-end">
-            <Button onClick={onSubmit} className="cursor-pointer w-35 h-9">Submit</Button>
+            <Button disabled={isLoading} onClick={onSubmit} className="cursor-pointer w-35 h-9">
+              {
+                isLoading?"Please Wait..":"Submit"
+              }
+            </Button>
           </div>
         </CardContent>
       </Card>

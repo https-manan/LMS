@@ -14,14 +14,14 @@ import { useGetCourseQuery } from '@/features/api/authApi'
 
 
 const CourseTable = () => {
-  const nevigate = useNavigate();
+  const navigate = useNavigate();
     const {data,isLoading} = useGetCourseQuery();
     if(isLoading){
         return <h1>Loading....</h1>
     }
   return (
     <div className="p-6 mt-9 bg-gray-50 min-h-screen">
-      <Link to='/admin/course/create'>
+      <Link to='/admin/courses/create'>
         <Button  className="mb-6 bg-black text-white hover:bg-black/90 rounded-lg px-5 py-2">
             Create new course
         </Button>
@@ -65,8 +65,8 @@ const CourseTable = () => {
                   </span>
                 </TableCell>
                 <TableCell className="py-4">
-                  <Button 
-                  onClick ={()=>{nevigate(course._id)}}
+                  <Button
+                  onClick={() => { navigate(`/admin/courses/${course._id}`) }}
                   className="bg-gray-100 text-black hover:bg-gray-200 rounded-md px-4 py-1.5">
                     Edit
                   </Button>

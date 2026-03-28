@@ -26,18 +26,18 @@ const Login = () => {
   };
   useEffect(()=>{
     if(registerSuccess && registerData){
-      toast.success(registerData?.message||"SignUp successful.")
+      toast.success(registerData?.msg||"SignUp successful.")
       nevigate('/login')
     }
   if(registerError){
-      toast.error(registerError.data?.message || "SignUp failed");
+      toast.error(registerError.data?.msg || "SignUp failed");
   }
     if(loginSuccess && loginData){
-      toast.success(loginData.message||"Logined successful.")
+      toast.success(loginData.msg||"Logined successful.")
       nevigate('/')
     }
     if(loginError){
-      toast.error(loginData.data?.message || "Login failed");
+      toast.error(loginData.data?.msg || "Login failed");
     }
   },[loginLoading,registerLoading,loginData,registerData,loginError,registerError ]) 
   return (

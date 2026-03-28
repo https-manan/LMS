@@ -11,7 +11,7 @@ const SideBar = () => {
             <ChartNoAxesColumn size={22} />
             <h1>Dashboard</h1>
           </Link>
-          <Link to="/admin/course" className="flex items-center gap-2 text-gray-700 font-medium">
+          <Link to="/admin/courses" className="flex items-center gap-2 text-gray-700 font-medium">
             <SquareLibrary size={22} />
             <h1>Courses</h1>
           </Link>
