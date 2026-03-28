@@ -6,7 +6,7 @@ import { useCreateCourseMutation } from "@/features/api/authApi";
 import { useEffect,useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AddCourse() {
         const [createCourse,{isSuccess,error,isLoading,data}] = useCreateCourseMutation();
@@ -17,11 +17,11 @@ export default function AddCourse() {
             courseDescription:""
         })
         const [file,setFile] = useState(null);
-        const nevigate = useNavigate();
+        const navigate = useNavigate();
         useEffect(()=>{
             if(isSuccess){
                 toast.success("Course Created successfully");
-                nevigate('/admin/courses')
+                navigate('/admin/courses')
             }
             if(error){
                 toast.error("Failed to create course")

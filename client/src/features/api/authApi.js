@@ -99,6 +99,14 @@ export const authApi = createApi({
                 method: "GET"
             })
         }),
+        togglePublish:builder.mutation({
+            query:({courseId,publish})=>({
+                url:`courses/${courseId}/toggle-publish?publish=${publish}`,   
+                method:"PUT",
+                credentials:"include"
+            }),
+            invalidatesTags:['Refetch_Creator_Course']
+        }),
         createLecture: builder.mutation({
             query: ({ formData, courseId }) => ({
                 url: `courses/${courseId}/lecture`,
@@ -146,6 +154,7 @@ export const {
     useUpdateUserMutation,
     useCreateCourseMutation,
     useGetCourseQuery,
+    useTogglePublishMutation,
     useEditCourseMutation,
     useGetCourseByIdQuery,
     useDeleteCourseMutation,
@@ -154,3 +163,6 @@ export const {
     useEditLectureMutation,
     useDeleteLectureMutation
 } = authApi;
+
+
+//Docs link is this https://redux-toolkit.js.org/rtk-query/overview

@@ -13,7 +13,7 @@ const EditCourse = () => {
         </h1>
 
         <Link to={`/admin/courses/${courseId}/lecture`}>
-          <Button onClick={()=>{nevigate("courses/:courseId/lecture")}} className="hover:text-blue-600"variant="link">
+          <Button className="hover:text-blue-600"variant="link">
             Go to the lecture page
           </Button>
         </Link>

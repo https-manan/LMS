@@ -1,35 +1,61 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import {  useEditLectureMutation } from '@/features/api/authApi';
-import { Save, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { Switch } from '@/components/ui/switch';
+import { useEditLectureMutation, useDeleteLectureMutation } from '@/features/api/authApi'; // ✅ imported useDeleteLectureMutation
+import { Save, Trash2, Upload } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'; // ✅ added useNavigate for redirect after delete
 import { toast } from 'sonner';
 
 const LectureTab = () => {
-  const [title,setTitle] = useState("");
-  const [isPreviewFree,setIsPreviewFree]=useState(false);
-  const [video,setVideo]=useState(null);
-  const [editLecture,{isSuccess,isError,isLoading}]=useEditLectureMutation()
-  const params= useParams();
+  const [title, setTitle] = useState("");
+  const [isPreviewFree, setIsPreviewFree] = useState(false);
+  const [video, setVideo] = useState(null);
+
+  const [editLecture, { isSuccess, isError, isLoading }] = useEditLectureMutation();
+  const [deleteLecture, { isSuccess: delSuccess, isError: delError, isLoading: delLoading }] = useDeleteLectureMutation(); // ✅ added delete mutation
+
+  const params = useParams();
   const courseId = params.courseId;
-  const submitLec=()=>{
+  const lectureId = params.lectureId;
+  const navigate = useNavigate(); // ✅ for redirecting after delete
+
+  const submitLec = () => {
     const formData = new FormData();
-    formData.append("title",title);
-    formData.append("isPreviewFree",isPreviewFree);
-    formData.append("video",video);
-    editLecture(courseId,formData);
+    formData.append("title", title);
+    formData.append("isPreviewFree", isPreviewFree);
+    if (video) formData.append("video", video);
+    editLecture({ courseId, lectureId, formData });
   }
-  useEffect(()=>{
-    if(isSuccess){
-      toast.success("Successfully edit the lecture")
+
+  // ✅ delete lecture handler
+  const deleteLec = async () => {
+    await deleteLecture(lectureId);
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Lecture updated successfully");
     }
-    if(isError){
-      toast.error("Erro in updating lecture")
+    if (isError) {
+      toast.error("Error in updating lecture");
     }
-  },[isError,isSuccess])
+  }, [isError, isSuccess])
+
+  // ✅ redirect back to lecture list after successful delete
+  useEffect(() => {
+    if (delSuccess) {
+      toast.success("Lecture deleted successfully");
+      navigate(`/admin/courses/${courseId}/lecture`);
+    }
+    if (delError) {
+      toast.error("Error in deleting lecture");
+    }
+  }, [delSuccess, delError])
+
   return (
     <div>
       <div className="max-w-3xl mx-auto px-6 py-10">
@@ -43,17 +69,19 @@ const LectureTab = () => {
                 Make changes and click save when done.
               </CardDescription>
             </div>
-
+            {/* ✅ delete button with loading state */}
             <Button
+              onClick={deleteLec}
+              disabled={delLoading}
               variant="destructive"
               size="sm"
               className="rounded-xl gap-2 text-sm font-semibold">
               <Trash2 className="h-4 w-4" />
-              Remove Lecture
+              {delLoading ? "Deleting..." : "Delete Lecture"}
             </Button>
           </CardHeader>
 
-          <Separator/>
+          <Separator />
 
           <CardContent className="pt-6 space-y-6">
             <div className="space-y-2">
@@ -62,25 +90,23 @@ const LectureTab = () => {
               </Label>
               <Input
                 value={title}
-                onChange={(e)=>{setTitle(e.target.value)}}
+                onChange={(e) => setTitle(e.target.value)}
                 id="title"
-                defaultValue="Introduction to Docker and Containerization"
+                placeholder="Enter lecture title"
                 className="rounded-xl bg-muted/50 border-muted-foreground/20 focus-visible:ring-primary/30"
               />
             </div>
+
             <div className="space-y-2">
               <Label className="text-sm font-medium">
-                Video{" "}
-                <span className="text-destructive ml-0.5">*</span>
+                Video <span className="text-destructive ml-0.5">*</span>
               </Label>
-
               <label
                 htmlFor="video-upload"
                 className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer group"
               >
                 <input
-                  value={video}
-                  onChange={(e)=>{setVideo(e.target.files[0])}}
+                  onChange={(e) => setVideo(e.target.files[0])}
                   id="video-upload"
                   type="file"
                   accept="video/*"
@@ -91,14 +117,15 @@ const LectureTab = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">
-                    Choose File
+                    {video ? video.name : "Choose File"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    No file chosen · MP4, MOV, AVI supported
+                    MP4, MOV, AVI supported
                   </p>
                 </div>
               </label>
             </div>
+
             <div className="flex items-center justify-between rounded-xl border bg-muted/30 px-4 py-3.5">
               <div>
                 <p className="text-sm font-medium text-foreground">
@@ -108,16 +135,25 @@ const LectureTab = () => {
                   Free lectures are visible to non-enrolled users
                 </p>
               </div>
-              <Switch value={isPreviewFree} onCheckedChange={(checked) => setIsPreviewFree(checked)} defaultChecked/>
+              <Switch
+                checked={isPreviewFree}
+                onCheckedChange={(checked) => setIsPreviewFree(checked)}
+              />
             </div>
+
             <Separator />
+
             <div className="flex items-center justify-end gap-3 pt-1">
               <Button variant="outline" className="rounded-xl font-semibold">
                 Cancel
               </Button>
-              <Button  onClick={submitLec} className="rounded-xl font-semibold gap-2">
+              {/* ✅ update button with loading state */}
+              <Button
+                onClick={submitLec}
+                disabled={isLoading}
+                className="rounded-xl font-semibold gap-2">
                 <Save className="h-4 w-4" />
-                Update Lecture
+                {isLoading ? "Updating..." : "Update Lecture"}
               </Button>
             </div>
           </CardContent>
@@ -127,4 +163,4 @@ const LectureTab = () => {
   )
 }
 
-export default LectureTab
+export default LectureTab;

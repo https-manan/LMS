@@ -4,14 +4,17 @@ import { Label } from "@/components/ui/label";
 import { useCreateLectureMutation, useGetLectureQuery } from "@/features/api/authApi";
 import { VideoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import Lecture from "./Lecture";
 
+
+import Lecture from "./Lecture";
 const CreateLecture = () => {
   const { courseId } = useParams();
-  const {data,isLoading:lectureLoading,isError:lectureError,refetch} = useGetLectureQuery(courseId);
-  const [createLecture, { isLoading, isSuccess, error }]=useCreateLectureMutation();
+  const navigate = useNavigate(); 
+
+  const { data, isLoading: lectureLoading, isError: lectureError, refetch } = useGetLectureQuery(courseId);
+  const [createLecture, { isLoading, isSuccess, error }] = useCreateLectureMutation();
 
   const [title, setTitle] = useState("");
   const [video, setVideo] = useState(null);
@@ -21,25 +24,23 @@ const CreateLecture = () => {
       toast.error("Title and video are required");
       return;
     }
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("video", video);
     try {
-      await createLecture({formData, courseId});
+      await createLecture({ formData, courseId });
     } catch (err) {
-        console.log(error)
+      console.log(err);
     }
   };
 
   useEffect(() => {
     if (isSuccess) {
-        refetch();
+      refetch();
       toast.success("Lecture created successfully");
       setTitle("");
       setVideo(null);
     }
-
     if (error) {
       toast.error("Failed to create lecture");
     }
@@ -57,10 +58,7 @@ const CreateLecture = () => {
       </div>
 
       <div className="mb-6">
-        <Label
-          htmlFor="lecture-title"
-          className="text-sm font-medium text-gray-700 mb-1.5 block"
-        >
+        <Label htmlFor="lecture-title" className="text-sm font-medium text-gray-700 mb-1.5 block">
           Title
         </Label>
         <Input
@@ -74,14 +72,11 @@ const CreateLecture = () => {
       </div>
 
       <div className="mb-8">
-        <Label
-          htmlFor="lecture-video"
-          className="text-sm font-medium text-gray-700 mb-1.5 block">
+        <Label htmlFor="lecture-video" className="text-sm font-medium text-gray-700 mb-1.5 block">
           Lecture Video
         </Label>
         <div className="flex items-center gap-3 border border-dashed border-gray-300 rounded-lg px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors">
           <VideoIcon className="w-5 h-5 text-gray-400 shrink-0" />
-
           <Input
             id="lecture-video"
             type="file"
@@ -90,31 +85,36 @@ const CreateLecture = () => {
             className="border-0 bg-transparent shadow-none p-0 text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border file:border-gray-300 file:text-xs file:font-medium file:bg-white file:text-gray-700 hover:file:bg-gray-50 cursor-pointer"
           />
         </div>
-        <p className="text-xs text-gray-400 mt-1.5">
-          MP4, MOV, AVI up to 2GB
-        </p>
+        <p className="text-xs text-gray-400 mt-1.5">MP4, MOV, AVI up to 2GB</p>
       </div>
 
-      <div className="flex items-center gap-3">
-        <Button variant="outline">Back to course</Button>
-
+      <div className="flex items-center gap-3 mb-8">
+        <Button variant="outline" onClick={() => navigate(`/admin/courses/${courseId}`)}>
+          Back to course
+        </Button>
         <Button
           className="bg-gray-900 hover:bg-gray-700 text-white"
           onClick={createLec}
           disabled={isLoading}>
           {isLoading ? "Creating..." : "Create lecture"}
         </Button>
-        <div>
-            {
-                lectureLoading?(
-                    <p>Loading...</p>
-                ):(
-                    lectureError?<p>Failed to get lectures</p>:((data?.lectures||[]).map((lecture,index)=>{
-                        return <Lecture key={lecture._id} lecture={lecture} courseId={courseId} index={index}/>
-                    }))
-                )
-            }
-        </div>
+      </div>
+
+      <div className="mt-6">
+        {lectureLoading ? (
+          <p>Loading...</p>
+        ) : lectureError ? (
+          <p>Failed to get lectures</p>
+        ) : (
+          (data?.lectures || []).map((lecture, index) => (
+            <Lecture
+              key={lecture._id}
+              lecture={lecture}
+              courseId={courseId}
+              index={index}
+            />
+          ))
+        )}
       </div>
     </div>
   );

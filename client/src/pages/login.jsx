@@ -13,7 +13,7 @@ const Login = () => {
   const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "" });
   const [loginUser,{data:loginData,error:loginError,isLoading:loginLoading,isSuccess:loginSuccess}] = useLoginUserMutation();
   const [registerUser ,{data:registerData,error:registerError,isLoading:registerLoading,isSuccess:registerSuccess}] = useRegisterUserMutation();
-  const nevigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,14 +27,14 @@ const Login = () => {
   useEffect(()=>{
     if(registerSuccess && registerData){
       toast.success(registerData?.msg||"SignUp successful.")
-      nevigate('/login')
+      navigate('/login')
     }
   if(registerError){
       toast.error(registerError.data?.msg || "SignUp failed");
   }
     if(loginSuccess && loginData){
       toast.success(loginData.msg||"Logined successful.")
-      nevigate('/')
+      navigate('/')
     }
     if(loginError){
       toast.error(loginData.data?.msg || "Login failed");
