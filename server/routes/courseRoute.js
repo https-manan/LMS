@@ -1,4 +1,4 @@
-import { createCourse, createLecture, deleteCourse, deleteLec, editCourse, editLecture, getCourseById, getCreatorCourse, getLectures } from '../controllers/courseController.js';
+import { createCourse, createLecture, deleteCourse, deleteLec, editCourse, editLecture, getCourseById, getCreatorCourse, getLectures, togglePublish } from '../controllers/courseController.js';
 import isAuthenticated from '../middleware/isAuthenticated.js';
 import upload from '../utils/multer.js';
 
@@ -14,5 +14,6 @@ route.post("/:courseId/lecture",isAuthenticated,upload.single("video"),createLec
 route.get("/:courseId/lecture",isAuthenticated,getLectures);
 route.put("/:courseId/:lectureId/update-lecture",isAuthenticated,editLecture);
 route.delete("/:lectureId",isAuthenticated,deleteLec);
+route.put("/:courseId/toggle-publish",isAuthenticated,togglePublish);
 
 export default route;

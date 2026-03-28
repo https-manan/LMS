@@ -147,7 +147,7 @@ export const getLectures = async (req, res) => {
             })
         }
         return res.json({
-            lecture: course.lectures
+            lectures: course.lectures
         })
     } catch (error) {
         console.log(error);
@@ -250,5 +250,28 @@ export const deleteLec=async(req,res)=>{
        return res.status(500).json({
         msg:"Error in deleteLec route"
        })
+    }
+}
+
+export const togglePublish=async (req,res)=>{
+    try {
+        const {courseId}=req.params;
+        const {publish} = req.query;//ye boolean ha to we gonna take it from query 
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(404).json({
+                msg:"No course found"
+            })
+        }
+        course.isPublished=publish === "true"; //coz jo req.params se aayga wwo string hoga but we havee to store the bool so this  === "true"
+        await course.save();
+        return res.status(200).json({
+            msg:"Updated published successfully."
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg:"Error in togglePublish endpoint"
+        })
     }
 }
