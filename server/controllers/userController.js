@@ -61,9 +61,11 @@ export const login = async(req,res)=>{
             secure: true,
             maxAge: 24*60*60*1000
         });
+        const sendUser = await User.findById(userExists._id).select("-password");
         return res.status(200).json({
             token,
-            msg:"User logined In successfully"
+            user:sendUser,
+            msg:"User logined In successfully",
         })
     } catch (error) {
         console.log(error);

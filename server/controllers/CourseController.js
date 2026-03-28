@@ -91,6 +91,36 @@ export const editCourse = async (req, res) => {
     }
 };
 
+export const deleteCourse=async(req,res)=>{
+    try {
+        const courseId=req.params.courseId;
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(200).json({
+                msg:"No course found"
+            })
+        }
+        await deleteMediaFromCloudinary(course.courseThumbnail.public_id);
+        for(const lectureId of course.lectures){
+            const lecture = await Lecture.findById(lectureId);
+            if(lecture){
+                await deleteVideoFromCloudinary(lecture.video.public_id);
+                await Lecture.findByIdAndDelete(lectureId);
+            }
+        }
+        await Course.findByIdAndDelete(courseId);
+        return res.status(200).json({
+            msg:"Course deleted successfully"
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg:"Error in del route"
+        })
+    }
+}
+
+
 export const getCourseById = async (req, res) => {
     try {
         const { courseId } = req.params;
