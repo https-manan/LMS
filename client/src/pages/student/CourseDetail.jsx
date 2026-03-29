@@ -20,7 +20,9 @@ const CourseDetail = () => {
     const course = data?.course;
 
     // ✅ check if user already purchased this course
-    const purchased = user?.enrolledCourses?.includes(courseId);
+    const purchased = user?.enrolledCourses?.some(
+        id => id.toString() === courseId
+    );
 
     return (
         <div className="min-h-screen mt-15 bg-gray-100">
