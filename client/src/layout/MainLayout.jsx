@@ -9,6 +9,7 @@ const Mainlayout = () => {
     <div>
         <Navbar/>
         <Outlet/>
+         {/* //outlet is coz in authAPI humne as child likha hai sbko */}
     </div>
   )
 }

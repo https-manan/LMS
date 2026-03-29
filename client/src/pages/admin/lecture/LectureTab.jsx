@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { useEditLectureMutation, useDeleteLectureMutation } from '@/features/api/authApi'; // ✅ imported useDeleteLectureMutation
+import { useEditLectureMutation, useDeleteLectureMutation, useGetCourseByIdQuery } from '@/features/api/authApi';
 import { Save, Trash2, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // ✅ added useNavigate for redirect after delete
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const LectureTab = () => {
@@ -16,22 +16,30 @@ const LectureTab = () => {
   const [video, setVideo] = useState(null);
 
   const [editLecture, { isSuccess, isError, isLoading }] = useEditLectureMutation();
-  const [deleteLecture, { isSuccess: delSuccess, isError: delError, isLoading: delLoading }] = useDeleteLectureMutation(); // ✅ added delete mutation
+  const [deleteLecture, { isSuccess: delSuccess, isError: delError, isLoading: delLoading }] = useDeleteLectureMutation();
 
   const params = useParams();
   const courseId = params.courseId;
   const lectureId = params.lectureId;
-  const navigate = useNavigate(); // ✅ for redirecting after delete
+  const navigate = useNavigate();
+
+  const { data } = useGetCourseByIdQuery(courseId);
+  useEffect(() => {
+    if (!data) return;
+    const lecture = data?.course?.lectures?.find(lec => lec._id === lectureId);
+    if (!lecture) return;
+    setTitle(lecture.lectureTitle);      
+    setIsPreviewFree(lecture.isPreview);  
+  }, [data])
 
   const submitLec = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("isPreviewFree", isPreviewFree);
-    if (video) formData.append("video", video);
+    if (video) formData.append("video", video); 
     editLecture({ courseId, lectureId, formData });
   }
 
-  // ✅ delete lecture handler
   const deleteLec = async () => {
     await deleteLecture(lectureId);
   }
@@ -45,17 +53,15 @@ const LectureTab = () => {
     }
   }, [isError, isSuccess])
 
-  // ✅ redirect back to lecture list after successful delete
   useEffect(() => {
     if (delSuccess) {
       toast.success("Lecture deleted successfully");
-      navigate(`/admin/courses/${courseId}/lecture`);
+      navigate(`/admin/courses/${courseId}/lecture`); 
     }
     if (delError) {
       toast.error("Error in deleting lecture");
     }
   }, [delSuccess, delError])
-
   return (
     <div>
       <div className="max-w-3xl mx-auto px-6 py-10">
@@ -69,7 +75,6 @@ const LectureTab = () => {
                 Make changes and click save when done.
               </CardDescription>
             </div>
-            {/* ✅ delete button with loading state */}
             <Button
               onClick={deleteLec}
               disabled={delLoading}
@@ -96,7 +101,6 @@ const LectureTab = () => {
                 className="rounded-xl bg-muted/50 border-muted-foreground/20 focus-visible:ring-primary/30"
               />
             </div>
-
             <div className="space-y-2">
               <Label className="text-sm font-medium">
                 Video <span className="text-destructive ml-0.5">*</span>
@@ -125,7 +129,6 @@ const LectureTab = () => {
                 </div>
               </label>
             </div>
-
             <div className="flex items-center justify-between rounded-xl border bg-muted/30 px-4 py-3.5">
               <div>
                 <p className="text-sm font-medium text-foreground">
@@ -140,14 +143,14 @@ const LectureTab = () => {
                 onCheckedChange={(checked) => setIsPreviewFree(checked)}
               />
             </div>
-
             <Separator />
-
             <div className="flex items-center justify-end gap-3 pt-1">
-              <Button variant="outline" className="rounded-xl font-semibold">
+              <Button
+                onClick={() => navigate(`/admin/courses/${courseId}/lecture`)} // ✅ cancel goes back to lecture list
+                variant="outline"
+                className="rounded-xl font-semibold">
                 Cancel
               </Button>
-              {/* ✅ update button with loading state */}
               <Button
                 onClick={submitLec}
                 disabled={isLoading}

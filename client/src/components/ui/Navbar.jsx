@@ -33,7 +33,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLogoutUserMutation } from '@/features/api/authApi'
 import { toast } from 'sonner'
 import { useSelector } from 'react-redux'
-
 const Navbar = () => {
   const user = useSelector((state) => state.auth.user);
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
@@ -53,7 +52,9 @@ const Navbar = () => {
       <div className='max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full'>
         <div className='flex items-center gap-4'>
           <School size={30} />
-          <h1 className='hidden md:block font-extrabold text-2xl'>E-learning</h1>
+          <Link to='/'>
+          <h1 className='hidden md:block font-extrabold text-2xl cursor-pointer'>E-learning</h1>
+          </Link>
         </div>
         <div className='flex items-center gap-4'>
           {user ? (
@@ -62,16 +63,16 @@ const Navbar = () => {
                 <Avatar>
                   <AvatarImage src={user?.photoUrl || "https://github.com/shadcn.png"} alt="@shadcn" />
                   <AvatarFallback>CN</AvatarFallback>
-                  <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+                  <AvatarBadge className="bg-green-600 dark:bg-green-800 cursor-pointer" />
                 </Avatar>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-56">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuItem><Link to="my-courses">My Courses</Link></DropdownMenuItem>
-                  <DropdownMenuItem><Link to="profile">My Profile</Link></DropdownMenuItem>
-                  <DropdownMenuItem onClick={logoutHandler}>Log out</DropdownMenuItem>
+                  <DropdownMenuLabel className="cursor-pointer">My Account</DropdownMenuLabel>
+                  <DropdownMenuItem className="cursor-pointer"><Link to="my-courses">My Courses</Link></DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer"><Link to="profile">My Profile</Link></DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={logoutHandler}>Log out</DropdownMenuItem>
                 </DropdownMenuGroup>
                 {
                   user.role === "instructor" && (
@@ -84,8 +85,8 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button onClick={() => { nevigate('/login') }} variant='outline'>Login</Button>
-              <Button>SignUp</Button>
+              <Button onClick={() => { nevigate('/login') }} className="cursor-pointer" variant='outline'>Login</Button>
+              <Button className="cursor-pointer">SignUp</Button>
             </>
           )}
           <DarkMode />

@@ -25,7 +25,7 @@ const CourseTab = () => {
 
   const [editCourse, { error, isSuccess, isLoading }] = useEditCourseMutation();
   const [deleteCourse, { isError, isLoading: DelLoading, isSuccess: delSuccess }] = useDeleteCourseMutation();
-  const [togglePublish, { isLoading: publishLoading, isSuccess: publishSuccess, isError: publishError }] = useTogglePublishMutation(); // ✅ fixed name
+  const [togglePublish, { isLoading: publishLoading, isSuccess: publishSuccess, isError: publishError,refetch }] = useTogglePublishMutation(); // ✅ fixed name
   const { data: courseData } = useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
 
   const handlePublish = async () => {
@@ -112,7 +112,7 @@ const CourseTab = () => {
                 </Button>
               </Link>
               <Button
-                disabled={publishLoading}
+                disabled={publishLoading && courseData?.course.lectures===0}
                 onClick={handlePublish}
                 variant="outline"
                 className="cursor-pointer">

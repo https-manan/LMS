@@ -41,7 +41,7 @@ export const authApi = createApi({
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 try {
                     await queryFulfilled;
-                    dispatch(userLoggedOut()); 
+                    dispatch(userLoggedOut());
                 } catch (error) {
                     console.log(error);
                 }
@@ -55,7 +55,7 @@ export const authApi = createApi({
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
-                    dispatch(userLoggedIn({ user: result.data.user })); 
+                    dispatch(userLoggedIn({ user: result.data.user }));
                 } catch (error) {
                     console.log(error);
                 }
@@ -99,13 +99,35 @@ export const authApi = createApi({
                 method: "GET"
             })
         }),
-        togglePublish:builder.mutation({
-            query:({courseId,publish})=>({
-                url:`courses/${courseId}/toggle-publish?publish=${publish}`,   
-                method:"PUT",
-                credentials:"include"
+            getPublishedCourse: builder.query({
+                query:()=>({
+                    url: '/courses/published-courses',
+                    method: 'GET',
+                    credentials: "include"
+                })
             }),
-            invalidatesTags:['Refetch_Creator_Course']
+        togglePublish: builder.mutation({
+            query: ({ courseId, publish }) => ({
+                url: `courses/${courseId}/toggle-publish?publish=${publish}`,
+                method: "PUT",
+                credentials: "include"
+            }),
+            invalidatesTags: ['Refetch_Creator_Course']
+        }),
+        makePayment: builder.mutation({
+            query: (courseId) => ({
+                url: `payment/${courseId}`,
+                method: "POST",
+                credentials: "include"
+            })
+        }),
+        verifyPayment: builder.mutation({
+            query: (paymentData) => ({
+                url: `payment/verify`,
+                method: "POST",
+                body: paymentData,
+                credentials: "include"
+            })
         }),
         createLecture: builder.mutation({
             query: ({ formData, courseId }) => ({
@@ -115,11 +137,11 @@ export const authApi = createApi({
                 credentials: "include"
             })
         }),
-        deleteCourse:builder.mutation({
-            query:(courseId)=>({
-                url:`courses/delete/${courseId}`,
-                method:"DELETE",
-                credentials:"include"
+        deleteCourse: builder.mutation({
+            query: (courseId) => ({
+                url: `courses/delete/${courseId}`,
+                method: "DELETE",
+                credentials: "include"
             })
         }),
         getLecture: builder.query({
@@ -153,6 +175,7 @@ export const {
     useLoadUserQuery,
     useUpdateUserMutation,
     useCreateCourseMutation,
+    useGetPublishedCourseQuery,
     useGetCourseQuery,
     useTogglePublishMutation,
     useEditCourseMutation,
@@ -161,7 +184,9 @@ export const {
     useCreateLectureMutation,
     useGetLectureQuery,
     useEditLectureMutation,
-    useDeleteLectureMutation
+    useDeleteLectureMutation,
+    useVerifyPaymentMutation,
+    useMakePaymentMutation,
 } = authApi;
 
 

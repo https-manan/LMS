@@ -17,7 +17,7 @@ const MyCourses = () => {
           c.map((x,index)=>{
             return <CourseSkeleton key={index}/>
           })
-          :myCourses.length===0?(<p>You are not enrolled in any courses</p>):myCourses.map((c,index)=>{return <Course key={index}/>})
+          :myCourses.length===0?(<p>You are not enrolled in any courses</p>):myCourses.map((c,index)=>{return <Course key={index} course={c}/>})
           }
         </div>
     </div>
