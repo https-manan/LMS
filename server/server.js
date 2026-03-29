@@ -7,8 +7,7 @@ import connect from './DB/connection.js';
 import userRoute from './routes/userRoute.js';
 import cookieParser from "cookie-parser";
 import courseRoute from './routes/courseRoute.js'
-
-
+import purchaseRoute from './routes/purchaseRoute.js';
 
 app.use(cookieParser())
 app.use(cors({
@@ -22,7 +21,7 @@ connect();
 //API'S
 app.use('/api/v1/users',userRoute);
 app.use('/api/v1/courses',courseRoute);
-
+app.use('/api/v1/payment',purchaseRoute);
 
 app.listen(PORT,()=>{
     console.log(`listening on port ${PORT}`);
